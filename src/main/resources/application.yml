@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: ${APPLICATION_NAME:-camel-sample-app}
+
+logging:
+  config: classpath:logback.xml
+
+# lets listen on all ports to ensure we can be invoked from the pod IP
+server:
+  address: 0.0.0.0
+
+management:
+  address: 0.0.0.0
+  security:
+    enabled: false
+
+endpoints:
+  enabled: true
+  health:
+    enabled: true
+
+security:
+  basic:
+    enabled: false
+
+# - Actuator Info
+info:
+  app:
+    name: I151 Enq Deq
+    description: SendClickSAPWorkTaskDetailServiceEnqueue
+    version:  1.0.0
+    runtime-config-type: desktop
+    APPLICATION_NAME: ${APPLICATION_NAME}
+
+# - Active MQ
+amq:
+  brokerurl: failover:(tcp://apldatintd001:61616)
+  username: amq
+  password: amq
+  redeliveryDelay: 1000
+  maximumRedeliveries: 5
+
+jms:
+  send-click-sap-work-task-detail-service:
+    queueName: com.sdge.si.SendClickSAPWorkTaskDetailServiceQueue
+
+service:
+  send-click-sap-work-task-detail-service:
+    address: /SendClickSAPWorkTaskDetailService
+
+cxf:
+  path: /services
+
+# the options from org.apache.camel.spring.boot.CamelConfigurationProperties can be configured here
+camel:
+  sringboot:
+    name: ${APPLICATION_NAME}
+
+# WebService Configuration
+soap-ws:
+  send-click-sap-work-task-detail-service:
+    endpoint: http://localhost:18080/MNR1/SendClickSAPWorkTaskDetailServiceV7
+
+
+route:
+  enqueue:
+    fromUri: cxf:bean:sendClickSAPWorkTaskDetailService?dataFormat=RAW
